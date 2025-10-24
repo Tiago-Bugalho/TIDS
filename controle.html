@@ -12,79 +12,48 @@ th{background:#2575fc;}
 tr:hover{background:rgba(37,117,252,0.2);}
 button{padding:6px 12px;border:none;border-radius:8px;background:#ff4d4d;color:white;cursor:pointer;transition:0.3s;}
 button:hover{background:#ff1a1a; transform:scale(1.05);}
-.alert{
-    position:fixed;
-    top:20px;
-    left:50%;
-    transform:translateX(-50%);
-    background:#28a745;
-    color:#fff;
-    padding:10px 20px;
-    border-radius:10px;
-    display:none;
-    animation:fadein 0.5s, fadeout 0.5s 2s;
-}
-@keyframes fadein{from{opacity:0;}to{opacity:1;}}
-@keyframes fadeout{from{opacity:1;}to{opacity:0;}}
+.start{background:#28a745;}
+.start:hover{background:#1f7a30;}
+.end{background:#ff4d4d;}
+.end:hover{background:#a80000;}
 </style>
 </head>
 <body>
 <h1>Painel de Controle Total</h1>
-<div class="alert" id="alert">Usuário excluído!</div>
 
-<h2 style="text-align:center; color:#ffd700;">Usuários</h2>
+<h2>Usuários</h2>
 <table>
-    <tr>
-        <th>Usuário</th>
-        <th>Data de Criação</th>
-        <th>Ações</th>
-    </tr>
-    {% for user in users %}
-    <tr id="user-{{ user.username }}">
-        <td>{{ user.username }}</td>
-        <td>{{ user.date }}</td>
-        <td>
-            {% if user.username not in SPECIAL_USERS %}
-            <form method="POST" action="/delete_user" style="display:inline;" onsubmit="return confirmDelete(this)">
-                <input type="hidden" name="username" value="{{ user.username }}">
-                <button type="submit">Excluir</button>
-            </form>
-            {% else %}
-            <span style="color:#aaa;">Admin protegido</span>
-            {% endif %}
-        </td>
-    </tr>
-    {% endfor %}
+<tr><th>Usuário</th><th>Data</th><th>Ações</th></tr>
+{% for user in users %}
+<tr>
+<td>{{ user.username }}</td>
+<td>{{ user.date }}</td>
+<td>
+<form method="POST" action="/delete_user" style="display:inline;">
+<input type="hidden" name="username" value="{{ user.username }}">
+<button type="submit">Excluir</button>
+</form>
+</td>
+</tr>
+{% endfor %}
 </table>
 
-<script>
-function showAlert(){
-    const alertBox = document.getElementById('alert');
-    alertBox.style.display = 'block';
-    setTimeout(()=>{ alertBox.style.display = 'none'; }, 2500);
-}
-
-function confirmDelete(form){
-    const reaction = prompt("Você tem certeza? Coloque a reação para o usuário:");
-    if(!reaction) return false;
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = "reaction";
-    input.value = reaction;
-    form.appendChild(input);
-    return true;
-}
-
-// Faz fade-out da linha excluída
-document.querySelectorAll('form').forEach(form => {
-    form.addEventListener('submit', function(e){
-        e.preventDefault();
-        const row = form.closest('tr');
-        fetch(form.action, {method:'POST', body:new FormData(form)})
-        .then(res=>res.text())
-        .then(()=>{row.style.transition='opacity 0.5s';row.style.opacity=0;showAlert(); setTimeout(()=>row.remove(),500);});
-    });
-});
-</script>
+<h2>Reunião</h2>
+{% if not meetings.active %}
+<form method="POST" action="/start_meeting">
+<button class="start">Iniciar Reunião</button>
+</form>
+{% else %}
+<form method="POST" action="/end_meeting">
+<button class="end">Encerrar Reunião</button>
+</form>
+<p>Admin: {{ meetings.admin }}</p>
+<h4>Participantes:</h4>
+<ul>
+{% for p in meetings.participants %}
+<li>{{ p }}</li>
+{% endfor %}
+</ul>
+{% endif %}
 </body>
 </html>

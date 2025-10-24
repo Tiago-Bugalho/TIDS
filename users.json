@@ -5,7 +5,9 @@
         "date": "24/10/2025",
         "avatar": "Leandro_1000084826.jpg",
         "deleted": false,
-        "reaction": ""
+        "reaction": "",
+        "points": 0,
+        "completed_challenges": []
     },
     {
         "username": "Tiago",
@@ -13,9 +15,8 @@
         "date": "24/10/2025",
         "avatar": "Tiago_youtube_foto.jpeg",
         "deleted": false,
-        "reaction": ""
+        "reaction": "",
+        "points": 0,
+        "completed_challenges": []
     }
-
 ]
-
-

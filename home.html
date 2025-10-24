@@ -18,6 +18,12 @@ ul li{padding:10px 0;font-size:18px;}
 .custom-file-upload{display:inline-block;padding:10px 20px;cursor:pointer;border-radius:10px;background:#ffd700;color:#333;font-weight:bold;transition:0.3s;margin-top:10px;}
 .custom-file-upload:hover{background:#ffea00;transform:scale(1.05);}
 .custom-file-upload input{display:none;}
+.tab{display:none;}
+.tab.active{display:block;}
+nav{display:flex;justify-content:center;margin-bottom:20px;}
+nav button{margin:0 10px;}
+.participant{display:flex;justify-content:space-between;align-items:center;margin:5px 0;background:rgba(255,255,255,0.1);padding:5px 10px;border-radius:10px;}
+.participant button{padding:5px 10px;margin-left:5px;font-size:12px;}
 </style>
 </head>
 <body>
@@ -32,22 +38,21 @@ ul li{padding:10px 0;font-size:18px;}
 <a href="/logout"><button>Sair</button></a>
 </header>
 
-<section>
-<h2>Seu Avatar</h2>
-<form action="/change_avatar" method="POST" enctype="multipart/form-data" style="text-align:center; margin-top:15px;">
-    <label class="custom-file-upload">
-        Escolher Foto
-        <input type="file" name="avatar" accept="image/*" onchange="this.form.submit()">
-    </label>
-</form>
-</section>
+<nav>
+<button onclick="showTab('sobre')">Sobre</button>
+<button onclick="showTab('servicos')">Serviços</button>
+<button onclick="showTab('funcionarios')">Funcionários</button>
+<button onclick="showTab('reuniao')">Reunião</button>
+<button onclick="showTab('notificacoes')">Notificações</button>
+{% if special %}<button onclick="location.href='/controle'">Controle</button>{% endif %}
+</nav>
 
-<section>
+<section id="sobre" class="tab active">
 <h2>Sobre a Empresa</h2>
 <p>Esta é uma empresa de programação criada para desenvolver soluções em software e tecnologia.</p>
 </section>
 
-<section>
+<section id="servicos" class="tab">
 <h2>Serviços</h2>
 <ul>
 <li>Desenvolvimento de sites</li>
@@ -56,11 +61,49 @@ ul li{padding:10px 0;font-size:18px;}
 </ul>
 </section>
 
-{% if special %}
-<section>
-<h2>Controle</h2>
-<a href="/controle"><button>Acessar Controle</button></a>
+<section id="funcionarios" class="tab">
+<h2>Funcionários</h2>
+<ul>
+{% for user in users %}
+<li>{{ user.username }} - Pontos: {{ user.points }}</li>
+{% endfor %}
+</ul>
 </section>
-{% endif %}
+
+<section id="reuniao" class="tab">
+<h2>Reunião</h2>
+<div id="meeting-status"></div>
+</section>
+
+<section id="notificacoes" class="tab">
+<h2>Notificações</h2>
+<div id="notificacoes-list"></div>
+</section>
+
+<script>
+function showTab(id){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+async function updateMeeting(){
+    const res = await fetch('/meeting_status');
+    const data = await res.json();
+    let html = '';
+    if(data.active){
+        html += '<p>Admin: '+data.admin+'</p>';
+        html += '<h4>Participantes:</h4>';
+        for(const user in data.participants){
+            html += '<div class="participant">'+user+'<span></span></div>';
+        }
+    }else{
+        html += '<p>Nenhuma reunião ativa.</p>';
+    }
+    document.getElementById('meeting-status').innerHTML = html;
+}
+
+setInterval(updateMeeting,50);
+updateMeeting();
+</script>
 </body>
 </html>
