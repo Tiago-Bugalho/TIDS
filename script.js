@@ -28,7 +28,7 @@ const estudantes = [
   {
     nome: "Gabriel",
     pontos: 1,
-    github: "lucaspacheco",
+    github: "lucaspachecotexeira",
     programa: "TIDS LAB",
     desafios: ["Conta GitHub"],
   },
