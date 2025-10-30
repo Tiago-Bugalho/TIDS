@@ -25,13 +25,6 @@ const estudantes = [
     programa: "TIDS LAB",
     desafios: ["Conta GitHub"],
   },
-  {
-    nome: "Gabriel",
-    pontos: 1,
-    github: "pachecolucas",
-    programa: "TIDS LAB",
-    desafios: ["Conta GitHub"],
-  },
 ];
 
 // Funções para a roleta
